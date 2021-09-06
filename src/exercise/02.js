@@ -28,7 +28,7 @@ function PokemonInfo({pokemonResource}) {
 
 function App() {
   const [pokemonName, setPokemonName] = React.useState('')
-  const [pokemonResource, setPokemonResource] = React.useState('pikachu')
+  const [pokemonResource, setPokemonResource] = React.useState(null)
   // 🐨 add a useState here to keep track of the current pokemonResource
 
   React.useEffect(() => {
@@ -51,16 +51,11 @@ function App() {
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-        {pokemonResource ? ( // 🐨 instead of pokemonName, use pokemonResource here
-          // 🐨 wrap PokemonInfo in a PokemonErrorBoundary and React.Suspense component
-          // to manage the error and loading states that PokemonInfo was managing
-          // before your changes.
-          //
-          // 💰 The PokemonErrorBoundary has the ability to recover from errors
-          // if you pass an onReset handler (or resetKeys). As a mini
-          // extra-credit, try to make that work.
-          // 📜 https://www.npmjs.com/package/react-error-boundary
-          <PokemonErrorBoundary resetKeys={pokemonName}>
+        {pokemonResource ? (
+          <PokemonErrorBoundary
+            resetKeys={[pokemonResource]}
+            onReset={() => setPokemonName('')}
+          >
             <React.Suspense
               fallback={<PokemonInfoFallback name={pokemonName} />}
             >
