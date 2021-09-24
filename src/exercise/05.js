@@ -6,7 +6,6 @@ import {
   fetchPokemon,
   PokemonInfoFallback,
   PokemonForm,
-  PokemonDataView,
   PokemonErrorBoundary,
   getImageUrlForPokemon,
 } from '../pokemon'

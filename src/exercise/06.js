@@ -9,6 +9,7 @@ import {
   PokemonForm,
   PokemonDataView,
   PokemonErrorBoundary,
+  usePokemonResource,
 } from '../pokemon'
 import {createResource, preloadImage} from '../utils'
 
@@ -51,21 +52,11 @@ function createPokemonResource(pokemonName) {
 function App() {
   const [pokemonName, setPokemonName] = React.useState('')
   // 🐨 move these two lines to a custom hook called usePokemonResource
-  const [startTransition, isPending] = React.useTransition(SUSPENSE_CONFIG)
-  const [pokemonResource, setPokemonResource] = React.useState(null)
+  const [pokemonResource, isPending] = usePokemonResource(pokemonName)
   // 🐨 call usePokemonResource with the pokemonName.
   //    It should return both the pokemonResource and isPending
 
   // 🐨 move this useEffect call your custom usePokemonResource hook
-  React.useEffect(() => {
-    if (!pokemonName) {
-      setPokemonResource(null)
-      return
-    }
-    startTransition(() => {
-      setPokemonResource(getPokemonResource(pokemonName))
-    })
-  }, [pokemonName, startTransition])
 
   function handleSubmit(newPokemonName) {
     setPokemonName(newPokemonName)
