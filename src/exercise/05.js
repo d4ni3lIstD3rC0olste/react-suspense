@@ -8,6 +8,7 @@ import {
   PokemonForm,
   PokemonDataView,
   PokemonErrorBoundary,
+  getImageUrlForPokemon,
 } from '../pokemon'
 import {createResource} from '../utils'
 
@@ -20,6 +21,14 @@ import {createResource} from '../utils'
 // we need to make a place to store the resources outside of render so
 // 🐨 create "cache" object here.
 
+function preloadImage(src) {
+  return new Promise(resolve => {
+    const img = document.createElement('img')
+    img.src = src
+    img.onload = () => resolve(src)
+  })
+}
+
 // 🐨 create an Img component that renders a regular <img /> and accepts a src
 // prop and forwards on any remaining props.
 // 🐨 The first thing you do in this component is check whether your
@@ -29,18 +38,9 @@ import {createResource} from '../utils'
 // 💰 Here's what rendering the <img /> should look like:
 // <img src={imgSrcResource.read()} {...props} />
 
-function PokemonInfo({pokemonResource}) {
-  const pokemon = pokemonResource.read()
-  return (
-    <div>
-      <div className="pokemon-info__img-wrapper">
-        {/* 🐨 swap this img for your new Img component */}
-        <img src={pokemon.image} alt={pokemon.name} />
-      </div>
-      <PokemonDataView pokemon={pokemon} />
-    </div>
-  )
-}
+const PokemonInfo = React.lazy(() =>
+  import('../lazy/pokemon-info-render-as-you-fetch'),
+)
 
 const SUSPENSE_CONFIG = {
   timeoutMs: 4000,
@@ -61,7 +61,13 @@ function getPokemonResource(name) {
 }
 
 function createPokemonResource(pokemonName) {
-  return createResource(fetchPokemon(pokemonName))
+  const imageUrl = getImageUrlForPokemon(pokemonName)
+  const pokemonPromise = createResource(fetchPokemon(pokemonName))
+  const imagePromise = createResource(preloadImage(imageUrl))
+  return {
+    data: pokemonPromise,
+    image: imagePromise,
+  }
 }
 
 function App() {
